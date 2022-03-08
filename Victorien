@@ -15,7 +15,8 @@ X0 = array([10, 5])
 
 X = integrate.odeint(dX_dt, X0, t)
 
-rabbits, foxes = X.T
+rabbits = X[:,0]
+foxes = X[:,1]
 
 f1 = p.figure()
 p.plot(t, rabbits, 'r-', label='Lapins')
