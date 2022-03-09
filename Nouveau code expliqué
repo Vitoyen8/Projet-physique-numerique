@@ -1,0 +1,85 @@
+import numpy as np
+from pylab import *
+
+
+#----------- Définition de la fonction Runge Kutta --------------#
+
+# dX_dt : Fonction à intégrer
+# X0 : Conditions initiales
+# t : Pas de temps
+# N : Nombre d'itérations
+
+def RungeKutta(r, t, N) :
+    
+    k1 = h * dX_dt( r , t )
+    k2 = h * dX_dt( r + 0.5*k1 , t + 0.5*N )
+    k3 = h * dX_dt( r + 0.5*k2 , t + 0.5*N )
+    k4 = h * dX_dt( r + k3 , t + N )
+    
+    return (k1+2*k2+2*k3+k4)/6
+
+#----------------- Définition de la fonction --------------------#
+
+def dX_dt(r, t):
+    
+    a = 1.0
+    b = 0.1
+    c = 1.5
+    d = 0.75
+    
+    # X est égale au rang 0 de la liste r, et Y rang 1 de la liste r 
+    X, Y = r[0],r[1]
+    
+    dx_dt = a*X -   b*X*Y
+    dy_dt = -c*Y + d*b*X*Y
+    
+    return np.array([dx_dt , dy_dt], float)
+
+#------------------ Définition de la boucle ---------------------#
+
+# h : Précision
+h = 0.001
+
+# Créer une espace de [start] jusque [stop] par pas de [step]
+
+tpoints = np.arange(0, 30, h)    # np.arange(start, stop, step) 
+
+# tpoints = [0.0000e+00 1.0000e-03 2.0000e-03 ... 2.9997e+01 2.9998e+01 2.9999e+01]
+ 
+xpoints = []                     # =[] => créer une liste de rang 0 nommer ypoints
+ypoints = []                     # =[] => créer une liste de rang 0 nommer ypoints
+
+X0, Y0 = 10, 10                  # Conditions initiales
+
+# np.array(object, dtype)
+# object = liste de rang 1
+# dtype = stocker sous forme de valeurs flottante
+
+r = np.array([X0,Y0], float)
+
+# Pour t dans tpoints, donc entre 0 et 30
+
+for t in tpoints:
+    
+    # xpoints.append(35) => Rajoute 35 comme un nouveau élément à la liste xpoints. 
+    # Une liste à 1D devient donc une liste à 2D.
+    
+    xpoints.append(r[0]) # On a donc xpoint => ([],[r[0]]) = (rang 0, rang 1)
+    ypoints.append(r[1])
+    
+    r += RungeKutta(r, t, h) # Équivalent à r = r + RungeKutta(r, t, h)
+
+f1 = plt.figure()
+plt.plot(tpoints, xpoints)
+plt.plot(tpoints, ypoints)
+plt.xlabel("Temps")
+plt.ylabel("Population")
+plt.title("Population en fonction du temps")
+
+f2 = plt.figure()
+plt.plot(xpoints, ypoints)
+plt.xlabel("Lapins")
+plt.ylabel("Renards")
+plt.title("Plan de phase")
+
+plt.show()
