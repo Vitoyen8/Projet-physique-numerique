@@ -34,9 +34,9 @@ def dX_dt(r, t):
     
     return np.array([dx_dt , dy_dt], float)
 
-#------------------------------------------------------------------#
+#------------------ Définition de la boucle ---------------------#
 
-h = 0.1
+h = 0.001
 tpoints = np.arange(0, 30, h)
 xpoints = []
 ypoints = []
