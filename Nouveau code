@@ -1,70 +1,53 @@
-from numpy import *
-import pylab as p
-from scipy import integrate
+import numpy as np
+from pylab import *
 
-a = 1.
-b = 0.1
-c = 1.5
-d = 0.75
 
-def dX_dt(X, t=0):
-    return array([ a*X[0] -   b*X[0]*X[1] , -c*X[1] + d*b*X[0]*X[1] ])
+#----------- Définition de la fonction Runge Kutta --------------#
 
-X_f1 = array([ c/(d*b), a/b])
+# dX_dt : Fonction à intégrer
+# X0 : Conditions initiales
+# t : Pas de temps
+# N : Nombre d'itérations
 
-def d2X_dt2(X, t=0):
-    return array([[a -b*X[1],   -b*X[0]     ], [b*d*X[1] ,   -c +b*d*X[0]] ])  
+def RungeKutta(r, t, N) :
+    
+    k1 = h * dX_dt( r , t )
+    k2 = h * dX_dt( r + 0.5*k1 , t + 0.5*N )
+    k3 = h * dX_dt( r + 0.5*k2 , t + 0.5*N )
+    k4 = h * dX_dt( r + k3 , t + N )
+    
+    return (k1+2*k2+2*k3+k4)/6
 
-A_f1 = d2X_dt2(X_f1)
+#----------------- Définition de la fonction --------------------#
 
-t = linspace(0, 15, 1000)
-X0 = array([10, 5])
+def dX_dt(r, t):
+    
+    a = 1.0
+    b = 0.1
+    c = 1.5
+    d = 0.75
+    
+    X, Y = r[0],r[1]
+    
+    dx_dt = a*X -   b*X*Y
+    dy_dt = -c*Y + d*b*X*Y
+    
+    return np.array([dx_dt , dy_dt], float)
 
-X = integrate.odeint(dX_dt, X0, t)
+#------------------------------------------------------------------#
 
-# GRAPH AVEC VECTEUR
+h = 0.1
+tpoints = np.arange(0, 30, h)
+xpoints = []
+ypoints = []
+r = np.array([2,2], float)
 
-values  = linspace(0.3, 0.9, 5)                          # position of X0 between X_f0 and X_f1
-vcolors = p.cm.autumn_r(linspace(0.3, 1.0, len(values)))  # colors for each trajectory
+for t in tpoints:
+    xpoints.append(r[0])
+    ypoints.append(r[1])
+    r += RungeKutta(r, t, h)
 
-f2 = p.figure()
 
-#-------------------------------------------------------
-
-# plot trajectories
-for v, col in zip(values, vcolors): 
-    X0 = v * X_f1                               # starting point
-    X = integrate.odeint( dX_dt, X0, t)         # we don't need infodict here
-    p.plot( X[:,0], X[:,1], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % ( X0[0], X0[1]) )
-
-#-------------------------------------------------------
-
-# define a grid and compute direction at each point
-ymax = p.ylim(ymin=0)[1]                        # get axis limits
-xmax = p.xlim(xmin=0)[1] 
-nb_points   = 20                      
-
-x = linspace(0, xmax, nb_points)
-y = linspace(0, ymax, nb_points)
-
-X1 , Y1  = meshgrid(x, y)                       # create a grid
-DX1, DY1 = dX_dt([X1, Y1])                      # compute growth rate on the gridt
-M = (hypot(DX1, DY1))                           # Norm of the growth rate 
-M[ M == 0] = 1.                                 # Avoid zero division errors 
-DX1 /= M                                        # Normalize each arrows
-DY1 /= M                                  
-
-#-------------------------------------------------------
-
-# Drow direction fields, using matplotlib 's quiver function
-# I choose to plot normalized arrows and to use colors to give information on
-# the growth speed
-p.title('Trajectories and direction fields')
-Q = p.quiver(X1, Y1, DX1, DY1, M, pivot='mid', cmap=p.cm.jet)
-p.xlabel('Number of rabbits')
-p.ylabel('Number of foxes')
-p.legend()
-p.grid()
-p.xlim(0, xmax)
-p.ylim(0, ymax)
-
+plt.plot(tpoints, xpoints)
+plt.plot(tpoints, ypoints)
+plt.show()
