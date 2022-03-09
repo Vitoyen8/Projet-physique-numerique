@@ -40,7 +40,8 @@ h = 0.001
 tpoints = np.arange(0, 30, h)
 xpoints = []
 ypoints = []
-r = np.array([2,2], float)
+X0, Y0 = 10, 10
+r = np.array([X0,Y0], float)
 
 for t in tpoints:
     xpoints.append(r[0])
@@ -50,8 +51,14 @@ for t in tpoints:
 f1 = plt.figure()
 plt.plot(tpoints, xpoints)
 plt.plot(tpoints, ypoints)
+plt.xlabel("Temps")
+plt.ylabel("Population")
+plt.title("Population en fonction du temps")
 
 f2 = plt.figure()
 plt.plot(xpoints, ypoints)
+plt.xlabel("Lapins")
+plt.ylabel("Renards")
+plt.title("Plan de phase")
 
 plt.show()
