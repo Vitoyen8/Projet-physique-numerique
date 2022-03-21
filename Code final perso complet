@@ -1,49 +1,56 @@
 from numpy import *
+import numpy as np
 import pylab as p
 from scipy import integrate
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
 
+
 #-----------------------------------------------------------------------------#
 # Choix des figures à afficher
 
-f1 = False
-f2 = False
-f3 = False
+f1 = True
+f2 = True
+f3 = True
+f3a = True
 f4 = False
 f5 = False
 
 #-----------------------------------------------------------------------------#
-
+# Coef, temps, couleurs
+if f1 == True or f2 == True or f3 == True or f3a == True or f4 == True or f5 == True :
+    
+    
 # Définition des coeficients
-a, b, c, d = 1.0, 0.1, 1.5, 0.75
-
+  a, b, c, d = 1.0, 0.1, 1.5, 0.75
+  
 # Définition du paramètre temps (discret)
-t = linspace(0, 15, 1000)
-t1 = linspace(0, 15, 200) # Pour plus petit temps de calcul sur graph 3D
-
-# Définition de la fonction dX/dt
-def dX_dt(X, t=0):
-    return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*b*X[0]*X[1] ])
-
+  t = linspace(0, 15, 1000)
+  t1 = linspace(0, 15, 200) # Pour plus petit temps de calcul sur graph 3D
+  t2 = linspace(0, 40, 1000) # Temps plus long que t
+  
 #-----------------------------------------------------------------------------#
-# Outils
 
 # Créer une suite 'values' compris entre 1er et 2ème point fixe, sera
 # proportionnel aux conditions initiales.
-values  = linspace(0.3, 0.9, 10)
+  values  = linspace(0.3, 0.9, 10)
 
 # Créer une liste 'vcolors' de la même taille que 'values' associant une 
 # couleur à chaque valeur, sera utilisé dans la suite.
-vcolors = p.cm.winter_r(linspace(0.3, 2.0, len(values)))
-mcolors = p.cm.autumn_r(linspace(0.3, 2.0, len(values)))
-hcolors = p.cm.coolwarm_r(linspace(0.3, 2.0, len(values)))
+  vcolors = p.cm.winter_r(linspace(0.3, 2.0, len(values)))
+  mcolors = p.cm.autumn_r(linspace(0.3, 2.0, len(values)))
+  hcolors = p.cm.summer_r(linspace(0.3, 2.0, len(values)))
+  
+#-----------------------------------------------------------------------------#
 
+  # Définition de la fonction dX/dt
+  def dX_dt(X, t, a, b, c, d):
+     return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*X[0]*X[1] ])
 #-----------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------#
-
 # Défini figure 'fig1' si f1 = True : Plan de phase en fonction paramètre (3D)
 if f1 == True :
+    
    fig1 = plt.figure()
 
 # Définit les 3 axes de projection
@@ -52,8 +59,8 @@ if f1 == True :
 # Pour 'v' et 'col' compris dans 'values'
    for v, col in zip(values, mcolors): 
       X0 = array([ v*c/d , v*a/b ]) # Conditions initales (proportionnel à v)
-      X = integrate.odeint( dX_dt, X0, t1) # Intégration via odeint 
-      ax.plot3D( X[:,0], X[:,1], t1, lw=4*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      X = integrate.odeint( dX_dt, X0, t1, args=(a,b,c,d)) # Intégration via odeint 
+      ax.plot3D( X[:,0], X[:,1], t1, lw=4*v, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       ax.scatter(X0[0],X0[1], 0, s=70, marker='o',color=col) # Plot des conditions initiales
     
 # lw = épaisseur des courbes (proportionnel à v)
@@ -72,21 +79,20 @@ if f1 == True :
 #fig1.set_size_inches(10, 10)
 
    plt.legend()
-
 #-----------------------------------------------------------------------------#
-
 # Défini figure 'fig2' si f2 = True : Plan de phase
 if f2 == True :
+    
    fig2 = plt.figure()
 
    for v, col in zip(values, vcolors): 
       X0 = array([ v*c/d , v*a/b ])
-      X = integrate.odeint( dX_dt, X0, t)
-      plt.plot(X[:,0], X[:,1],lw=5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
+      plt.plot(X[:,0], X[:,1],lw=5*v, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(X0[0],X0[1], s=70, marker='o',color=col) # Plot des conditions initiales
 
-   plt.xlabel('Proie (unité arbitraire)',fontsize=16)
-   plt.ylabel('Prédateurs (unité arbitraire)',fontsize=16)
+   plt.xlabel('Proies',fontsize=16)
+   plt.ylabel('Prédateurs',fontsize=16)
 
 # fig2.set_size_inches(17, 10) # Taille de la fenêtre de la figure
    mngr = plt.get_current_fig_manager()
@@ -105,7 +111,7 @@ if f2 == True :
    y = linspace(0, ymax, nb_points) # Liste de points entre 0 et ymax
 
    X1 , Y1  = meshgrid(x, y)  # Création d'une grille
-   DX1, DY1 = dX_dt([X1, Y1]) # On associe à chaque valeur la rapidité de convergence
+   DX1, DY1 = dX_dt([X1, Y1],t,a,b,c,d) # On associe à chaque valeur la rapidité de convergence
    M = (hypot(DX1, DY1))      # Norme de la rapidité de convergence
    M [M == 0] = 1.0           # On retirer l'erreur de la division par 0
    DX1 = DX1/M                # Normalisation des vecteurs
@@ -145,23 +151,21 @@ if f2 == True :
    ax_check = plt.axes([0.9, 0.001, 0.2, 0.3])
    plot_button = CheckButtons(ax_check, labels, label)
    plot_button.on_clicked(func)
-
 #-----------------------------------------------------------------------------#
-
 # Défini figure 'fig3' si f3 = True : Population en fonction du temps
 if f3 == True :
    fig3 = plt.figure()
 
    for v, col in zip(values, vcolors): 
       X0 = array([ v*c/d , v*a/b ])
-      X = integrate.odeint( dX_dt, X0, t)
-      plt.plot(t, X[:,0], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
+      plt.plot(t, X[:,0], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[0], s=40, marker='o',color=col) # Plot des conditions initiales
 
    for v, col in zip(values, mcolors): 
       X0 = array([ v*c/d , v*a/b ])
-      X = integrate.odeint( dX_dt, X0, t)
-      plt.plot(t, X[:,1], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
+      plt.plot(t, X[:,1], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[1], s=40, marker='o',color=col) # Plot des conditions initiales
 
 # Ligne limite (1 unité), ici si unité arbitraire popu. est en millier
@@ -170,43 +174,65 @@ if f3 == True :
    plt.xlabel('Temps (unité arbitraire)',fontsize=17)
    plt.ylabel('Population Proie / Prédateur (unité arbitraire)',fontsize=17)
 
+   # fig3.set_size_inches(17, 10) -> Deuxième méthode pour fenêtre.
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
-# fig3.set_size_inches(17, 10) -> Deuxième méthode pour fenêtre.
-
 #-----------------------------------------------------------------------------#
-#-----------------------------------------------------------------------------#
+# Défini figure 'fig3' si f3 = True : dX_dt en fonction des paramètres
+if f3a == True :
+   
+   X0 = [4, 2]
+   betas = np.arange(0.9, 1.4, 0.1)
+   
+   fig, ax3a = plt.subplots(2,1)
 
+   for b, col in zip(betas, vcolors):
+       
+       X = integrate.odeint(dX_dt, X0, t2, args = (a,b,c,d))
+       
+       ax3a[0].plot(t, X[:,0], color = col, label= r" $\beta = $" + "%f"%b)
+       ax3a[1].plot(t, X[:,1], color = col, label = r" $\beta = $" + "{0:.2f}".format(b))
+       ax3a[0].legend()
+       ax3a[1].legend()
+
+   ax3a[0].set_xlabel('Temps')
+   ax3a[0].set_ylabel('Prédateurs')
+   ax3a[1].set_xlabel('Temps')
+   ax3a[1].set_ylabel('Proies');
+
+
+   mngr = plt.get_current_fig_manager()
+   mngr.window.setGeometry(0,70,1438,750)
+#-----------------------------------------------------------------------------#
 # Ajout de termes supplémentaires
-
-e, f = 0.5, 0.8
-
 def dXs_dt(X, t=0):
-    return array([ a*X[0] - b*X[0]*X[1]*X[2],
+    e, f = 0.5, 0.8
+    return array([ a*X[0] - b*X[0]*X[1]*X[2], 
                   -c*X[1]*X[2] + d*b*X[0]*X[1], 
-                  - e*f*X[0]*X[2] ])
-
+                  -e*X[0]*X[2] + d*b*X[0]*X[1]])
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig4' si f4 est True: Population en fonction du temps pour dXs/dt
 if f4 == True :
+    
+    
    fig4 = plt.figure()
 
    for v, col in zip(values, vcolors): 
       X0 = array([ v*c/d , v*a/b , v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,0], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,0], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[0], s=40, marker='o',color=col) # Plot des conditions initiales
 
    for v, col in zip(values, mcolors): 
       X0 = array([ v*c/d , v*a/b , v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,1], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,1], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[1], s=40, marker='o',color=col) # Plot des conditions initiales
 
-   for v, col in zip(values, mcolors): 
+   for v, col in zip(values, hcolors): 
       X0 = array([ v*c/d , v*a/b , v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,2], lw=3.5*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,2], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[2], s=40, marker='o',color=col) # Plot des conditions initiales
 
 # Ligne limite (1 unité), ici si unité arbitraire popu. est en millier
@@ -217,10 +243,11 @@ if f4 == True :
 
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
-
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig5' si f5 est True : Plan de phase (3D)
 if f5 == True :
+    
+    
    fig5 = plt.figure()
    ax = plt.axes(projection='3d')
 
