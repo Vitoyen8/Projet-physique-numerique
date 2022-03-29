@@ -34,7 +34,7 @@ def trace(X,a,b,c,d) :
   for B, col in zip(betas, mcolors):
         
      X = integrate.odeint(dX_dt, X00, t3b, args = (a,B,c,d))
-       
+     
      ax3b[1].plot(t3b, X[:,1], color = col, label = R" $\beta = $" + "%.1f" %B)
      ax3b[1].legend()
      fig3b.suptitle("Proies et prédateurs en fonction de beta")
@@ -44,16 +44,24 @@ def trace(X,a,b,c,d) :
 
 fig3b.subplots_adjust(left=0.15, bottom=0.25)
 
-axe_x0 = plt.axes([0.20, 0.05, 0.65, 0.03])
-axe_y0 = plt.axes([0.05, 0.25, 0.015, 0.63])
+axe_x0 = plt.axes([0.25, 0.05, 0.65, 0.03])
+axe_y0 = plt.axes([0.05, 0.25, 0.0225, 0.63])
 
 barre_x0= Slider(axe_x0, '$X_0$', 1.0, 15, 2.5)
 barre_y0= Slider(axe_y0, label='$y_0$',valmin=0.1, 
                      valmax=30,orientation="vertical")
  
 def update(val):
-    ax3b[1].clear()
+    
     ax3b[0].clear()
+    ax3b[1].clear()
+    ax3b[0].legend()
+    ax3b[1].legend()
+    ax3b[0].set_xlabel('Temps')
+    ax3b[0].set_ylabel('Prédateurs')
+    ax3b[1].set_xlabel('Temps')
+    ax3b[1].set_ylabel('Proies');
+    
     X00[0]=barre_x0.val
     X00[1]=barre_y0.val
     trace(X00,a,b,c,d)
@@ -64,10 +72,6 @@ barre_y0.on_changed(update)
 update(0)
 
 #-----------------------------------------------------------------------------#
-ax3b[0].set_xlabel('Temps')
-ax3b[0].set_ylabel('Prédateurs')
-ax3b[1].set_xlabel('Temps')
-ax3b[1].set_ylabel('Proies');
 
 mngr = plt.get_current_fig_manager()
 mngr.window.setGeometry(0,70,1438,750)
