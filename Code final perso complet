@@ -4,7 +4,7 @@ import pylab as p
 from scipy import integrate
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
-
+%matplotlib qt5
 
 #-----------------------------------------------------------------------------#
 # Choix des figures à afficher
@@ -16,31 +16,51 @@ f3a = True
 f3b = True
 f3c = True
 f3d = True
-f4 = False
-f5 = False
+f4 = True
+f5 = True
 
 #-----------------------------------------------------------------------------#
-# Coef, temps, couleurs
-if f1 == True or f2 == True or f3 == True or f3a == True or f4 == True or f5 == True :
+
+###########################- PARAMETRE À RÉGLER -##############################
+
+#-----------------------------------------------------------------------------#
+
+if f1 == True or f2 == True or f3 == True or f3a == True or f3b == True or f3c == True or f3d == True or f4 == True or f5 == True :
     
     
+# Coef, temps pour graph population et graph de phase #
+
 # Définition des coeficients
   a, b, c, d = 1.0, 0.1, 1.5, 0.75
   
 # Définition du paramètre temps (discret)
   t = linspace(0, 15, 1000)
   t1 = linspace(0, 15, 200) # Pour plus petit temps de calcul sur graph 3D
-  t2 = linspace(0, 40, 1000) # Temps plus long que t
-  t3a = linspace(0, 20, 500) # Temps pour les graphs de variation des params
-  t3b = linspace(0, 20, 500)
-  t3c = linspace(0, 20, 500)
-  t3d = linspace(0, 15, 500)
+  t2 = linspace(0, 70, 5000)
   
 #-----------------------------------------------------------------------------#
 
-# Créer une suite 'values' compris entre 1er et 2ème point fixe, sera
-# proportionnel aux conditions initiales.
+# Graph de variation des params #
+  X00 = [4, 2] # Condittions initiales
+  t3a = linspace(0, 20, 500) # Temps pour alpha
+  t3b = linspace(0, 20, 500) # Temps pour beta
+  t3c = linspace(0, 20, 500) # Temps pour gamma
+  t3d = linspace(0, 15, 500) # Temps pour delta
+  
+  # Valeurs dans lesquelles on fait varier les paramètres
+  alphas = np.arange(0.4, 1.4, 0.1)
+  betas = np.arange(0.4, 1.4, 0.1)
+  gammas = np.arange(0.4, 1.4, 0.1)
+  deltas = np.arange(0.4, 1.4, 0.1) 
+  
+#-----------------------------------------------------------------------------#
+# Pour le graph de variations de dx/dt en fonction des conditions initales 
+
+# Créer une suite 'values' compris entre 1er et 2ème point fixe.
   values  = linspace(0.3, 0.9, 10)
+
+#-----------------------------------------------------------------------------#
+# Pour les dégradés de couleurs
 
 # Créer une liste 'vcolors' de la même taille que 'values' associant une 
 # couleur à chaque valeur, sera utilisé dans la suite.
@@ -48,140 +68,113 @@ if f1 == True or f2 == True or f3 == True or f3a == True or f4 == True or f5 == 
   mcolors = p.cm.autumn_r(linspace(0.1, 1.0, len(values)))
   hcolors = p.cm.summer_r(linspace(0.1, 1.0, len(values)))
   rcolors = p.cm.rainbow_r(linspace(0.1, 1.0, len(values)))
-#-----------------------------------------------------------------------------#
 
+#-----------------------------------------------------------------------------#
+# Pour les graph avec équations avec termes supplémentaires
+
+  # Valeurs que l'on va attribuer aux conditions initiales pour graph
+  valuess  = linspace(1, 10, 10)
+#-----------------------------------------------------------------------------#
   # Définition de la fonction dX/dt
   def dX_dt(X, t, a, b, c, d):
      return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*X[0]*X[1] ])
 #-----------------------------------------------------------------------------#
-###############################################################################
+
+####################- GRAPH AVEC LES ÉQUATIONS DE BASE -#######################
+
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig1' si f1 = True : Plan de phase en fonction paramètre (3D)
 if f1 == True :
     
    fig1 = plt.figure()
-
-# Définit les 3 axes de projection
+   # Définit les 3 axes de projection
    ax = plt.axes(projection='3d')
-
-# Pour 'v' et 'col' compris dans 'values'
+   
+   # Pour 'v' et 'col' compris dans 'values'
    for v, col in zip(values, mcolors): 
       X0 = array([ v*c/d , v*a/b ]) # Conditions initales (proportionnel à v)
       X = integrate.odeint( dX_dt, X0, t1, args=(a,b,c,d)) # Intégration via odeint 
-      ax.plot3D( X[:,0], X[:,1], t1, lw=4*v, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
+      ax.plot3D( X[:,0], X[:,1], t1, lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       ax.scatter(X0[0],X0[1], 0, s=70, marker='o',color=col) # Plot des conditions initiales
     
-# lw = épaisseur des courbes (proportionnel à v)
-# color = couleur des courbes (proportionnel à col, et donc à v)
-
+   # lw = épaisseur des courbes (proportionnel à v)
+   # color = couleur des courbes (proportionnel à col, et donc à v)
    ax.set_xlabel('Proies',fontsize=16)
    ax.set_ylabel('Prédateurs',fontsize=16)
    ax.set_zlabel('Temps',fontsize=16)
-
-# Première méthode pour ajuster fenêtre d'affichage
+   
+   # Première méthode pour ajuster fenêtre d'affichage
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,750,750)
-#(Distance de gauche, distance d'en haut, largeur, hauteur)
-
-# Deuxième méthode pour ajuster fenêtre
-#fig1.set_size_inches(10, 10)
-
+   
+   # (Distance de gauche, distance d'en haut, largeur, hauteur)
+   # Deuxième méthode pour ajuster fenêtre
+   # fig1.set_size_inches(10, 10)
+   plt.title('Figure')
    plt.legend()
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig2' si f2 = True : Plan de phase
 if f2 == True :
     
    fig2 = plt.figure()
-
+   
    for v, col in zip(values, vcolors): 
       X0 = array([ v*c/d , v*a/b ])
       X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
       plt.plot(X[:,0], X[:,1],lw=5*v, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(X0[0],X0[1], s=70, marker='o',color=col) # Plot des conditions initiales
-
+      
    plt.xlabel('Proies',fontsize=16)
    plt.ylabel('Prédateurs',fontsize=16)
-
-# fig2.set_size_inches(17, 10) # Taille de la fenêtre de la figure
+   
+   # fig2.set_size_inches(17, 10) # Taille de la fenêtre de la figure
+   
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1000,750)
-
    plt.legend()
-
-#-----------------------------------------------------------------------------#
-# Vecteurs sur 'fig2' plan de phase
-
+   
+   #--------------------------------------------------------------------------#
+   # Vecteurs sur 'fig2' plan de phase
+   
    ymax = p.ylim(ymin=0)[1] # On définit une valeur y max
    xmax = p.xlim(xmin=0)[1] # On définit une valeur x max
    nb_points   = 30         # Le nombre de point que l'on veut entre 0 et les max
-
+   
    x = linspace(0, xmax, nb_points) # Liste de points entre 0 et xmax
    y = linspace(0, ymax, nb_points) # Liste de points entre 0 et ymax
-
+   
    X1 , Y1  = meshgrid(x, y)  # Création d'une grille
    DX1, DY1 = dX_dt([X1, Y1],t,a,b,c,d) # On associe à chaque valeur la rapidité de convergence
    M = (hypot(DX1, DY1))      # Norme de la rapidité de convergence
    M [M == 0] = 1.0           # On retirer l'erreur de la division par 0
    DX1 = DX1/M                # Normalisation des vecteurs
    DY1 = DY1/M   
-
-#On utilise la fonction p.quiver pour tracer les vecteurs
+   
+   # On utilise la fonction p.quiver pour tracer les vecteurs
    vecteur = p.quiver(X1, Y1, DX1, DY1, M, pivot='tip', cmap=p.cm.rainbow)
-
-# Plot d'une courbe vertical x = à 1/unité arbitraire
+   
+   # Plot d'une courbe vertical x = à 1/unité arbitraire
    plt.plot([xmax,0], [0.001,0.001], '--k', lw=1.5)
-# Plot d'une courbe vertical y = à 1/unité arbitraire
+   
+   # Plot d'une courbe vertical y = à 1/unité arbitraire
    plt.plot([0.001,0.001], [0,ymax], '--k', lw=1.5)
-
-#-----------------------------------------------------------------------------#
-# Surface avec dégradé selon norme des vecteurs
-
-   #nb_points1   = 30    
-
-   #x1 = linspace(0, xmax, nb_points1)
-   #y1 = linspace(0, ymax, nb_points1)
-
-   #dégradé = plt.pcolor(x1, y1, DX1, edgecolors='k', cmap='winter', alpha=0.1)
-
-#-----------------------------------------------------------------------------#
-#Bouton pour afficher où non vecteurs et dégradé
-
-   #lines = [dégradé]
-   #label = [True]
-   #labels = ["Dégradé"]
-
-   #def func(label):
-     # index = labels.index(label)
-     # lines[index].set_visible(not lines[index].get_visible())
-      #fig.canvas.draw()
-    
-# xposition, yposition, width and height
-   #ax_check = plt.axes([0.9, 0.001, 0.2, 0.3])
-   #plot_button = CheckButtons(ax_check, labels, label)
-   #plot_button.on_clicked(func)
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig3' si f3 = True : Population en fonction du temps
 if f3 == True :
    fig3 = plt.figure()
-
+   
    for v, col in zip(values, vcolors): 
       X0 = array([ v*c/d , v*a/b ])
       X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
       plt.plot(t, X[:,0], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[0], s=40, marker='o',color=col) # Plot des conditions initiales
-
+      
    for v, col in zip(values, mcolors): 
       X0 = array([ v*c/d , v*a/b ])
       X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
       plt.plot(t, X[:,1], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
-      plt.scatter(0, X0[1], s=40, marker='o',color=col) # Plot des conditions initiales
-
-# Ligne limite (1 unité), ici si unité arbitraire popu. est en millier
-   plt.plot([15,0], [0.001,0.001], '--k', lw=2)
-   plt.legend()
-   plt.xlabel('Temps (unité arbitraire)',fontsize=17)
-   plt.ylabel('Population Proie / Prédateur (unité arbitraire)',fontsize=17)
-
+      plt.scatter(0, X0[1], s=40, marker='o',color=col)
+   
    # fig3.set_size_inches(17, 10) -> Deuxième méthode pour fenêtre.
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
@@ -189,14 +182,12 @@ if f3 == True :
 # Défini figure 'fig3a' si f3a = True : dX_dt en fonction de a
 if f3a == True :
    
-   X0 = [4, 2]
-   alphas = np.arange(0.4, 1.4, 0.1)
+   fig3a, ax3a = plt.subplots(2,1)
+   fig3a.suptitle("Proies et prédateurs en fonction de alpha", size = 17 )
    
-   fig, ax3a = plt.subplots(2,1)
-
    for a, col in zip(alphas, vcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3a, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3a, args = (a,b,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
@@ -205,31 +196,27 @@ if f3a == True :
        
    for a, col in zip(alphas, mcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3a, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3a, args = (a,b,c,d))
        
        ax3a[1].plot(t3a, X[:,1], color = col, label = R" $\alpha = $" + "%.1f" %a)
        ax3a[1].legend()
-
    ax3a[0].set_xlabel('Temps')
    ax3a[0].set_ylabel('Prédateurs')
    ax3a[1].set_xlabel('Temps')
    ax3a[1].set_ylabel('Proies');
-
-
+   
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig3b' si f3b = True : dX_dt en fonction de b
-if f3a == True :
-   
-   X0 = [4, 2]
-   betas = np.arange(0.4, 1.4, 0.1)
-   
-   fig, ax3b = plt.subplots(2,1)
+if f3b == True :
 
+   fig3b, ax3b = plt.subplots(2,1)
+   fig3b.suptitle("Proies et prédateurs en fonction de beta", size = 17 )
+   
    for b, col in zip(betas, vcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3b, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3b, args = (a,b,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
@@ -238,31 +225,28 @@ if f3a == True :
        
    for b, col in zip(betas, mcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3b, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3b, args = (a,b,c,d))
        
        ax3b[1].plot(t3b, X[:,1], color = col, label = R" $\beta = $" + "%.1f" %b)
        ax3b[1].legend()
-
+       fig3b.suptitle("Proies et prédateurs en fonction de beta")
+       
    ax3b[0].set_xlabel('Temps')
    ax3b[0].set_ylabel('Prédateurs')
    ax3b[1].set_xlabel('Temps')
    ax3b[1].set_ylabel('Proies');
-
-
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig3c' si f3c = True : dX_dt en fonction de c
 if f3c == True :
+    
+   fig3c, ax3c = plt.subplots(2,1)
+   fig3c.suptitle("Proies et prédateurs en fonction de gamma", size = 17 )
    
-   X0 = [4, 2]
-   gammas = np.arange(0.4, 1.4, 0.1)
-   
-   fig, ax3c = plt.subplots(2,1)
-
    for c, col in zip(gammas, vcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3c, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
@@ -271,31 +255,28 @@ if f3c == True :
        
    for c, col in zip(gammas, mcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3c, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,c,d))
        
        ax3c[1].plot(t3c, X[:,1], color = col, label = R" $\gamma = $" + "%.1f" %c)
        ax3c[1].legend()
-
+       fig3c.suptitle("Proies et prédateurs en fonction de gamma")
+       
    ax3c[0].set_xlabel('Temps')
    ax3c[0].set_ylabel('Prédateurs')
    ax3c[1].set_xlabel('Temps')
    ax3c[1].set_ylabel('Proies');
-
-
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig3d' si f3d = True : dX_dt en fonction de d
 if f3d == True :
    
-   X0 = [4, 2]
-   deltas = np.arange(0.4, 1.4, 0.1)
+   fig3d, ax3d = plt.subplots(2,1)
+   fig3d.suptitle("Proies et prédateurs en fonction de delta", size = 17  )
    
-   fig, ax3d = plt.subplots(2,1)
-
    for d, col in zip(deltas, vcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3d, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
@@ -304,23 +285,23 @@ if f3d == True :
        
    for d, col in zip(deltas, mcolors):
        
-       X = integrate.odeint(dX_dt, X0, t3d, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,d))
        
        ax3d[1].plot(t3d, X[:,1], color = col, label = R" $\delta= $" + "%.1f" %d)
        ax3d[1].legend()
-
+       fig3d.suptitle("Proies et prédateurs en fonction de delta")
+       
    ax3d[0].set_xlabel('Temps')
    ax3d[0].set_ylabel('Prédateurs')
    ax3d[1].set_xlabel('Temps')
    ax3d[1].set_ylabel('Proies');
-
-
    mngr = plt.get_current_fig_manager()
-   mngr.window.setGeometry(0,70,1438,750)
+   mngr.window.setGeometry(0,70,1438,750) 
 #-----------------------------------------------------------------------------#
-###############################################################################
+
+####################- AJOUT DES TERMES SUPPLÉMENTAIRES -########################
+
 #-----------------------------------------------------------------------------#
-# Ajout de termes supplémentaires
 def dXs_dt(X, t=0):
     e, f = 0.5, 0.8
     return array([ a*X[0] - b*X[0]*X[1]*X[2], 
@@ -330,65 +311,63 @@ def dXs_dt(X, t=0):
 # Défini figure 'fig4' si f4 est True: Population en fonction du temps pour dXs/dt
 if f4 == True :
     
-    
    fig4 = plt.figure()
-
-   for v, col in zip(values, vcolors): 
-      X0 = array([ v*c/d , v*a/b , v])
+   
+   for v, col in zip(valuess, vcolors): 
+      X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,0], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,0], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]))
       plt.scatter(0, X0[0], s=40, marker='o',color=col) # Plot des conditions initiales
-
-   for v, col in zip(values, mcolors): 
-      X0 = array([ v*c/d , v*a/b , v])
+ #     legend1 = fig4.legend('$X_0$=(%.f,%.f)' % (X0[0],X0[1]), title="Classes")
+      
+   for v, col in zip(valuess, mcolors): 
+      X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,1], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,1], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[1], s=40, marker='o',color=col) # Plot des conditions initiales
-
-   for v, col in zip(values, hcolors): 
-      X0 = array([ v*c/d , v*a/b , v])
+ #     legend2 = fig4.legend('$X_0$=(%.f,%.f)' % (X0[0],X0[1]), title="Classes")
+      
+   for v, col in zip(valuess, hcolors): 
+      X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,2], lw=1, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
       plt.scatter(0, X0[2], s=40, marker='o',color=col) # Plot des conditions initiales
-
-# Ligne limite (1 unité), ici si unité arbitraire popu. est en millier
+      legend3 = fig4.legend('H+r"{0:.2f}".format(valuess)', title="Classes") 
+   
+   # Ligne limite (1 unité), ici si unité arbitraire popu. est en millier
    plt.plot([15,0], [0.001,0.001], '--k', lw=2)
-   plt.legend()
    plt.xlabel('Temps (unité arbitraire)',fontsize=17)
    plt.ylabel('Population Proie / Prédateur (unité arbitraire) / 3ème acteur',fontsize=17)
-
+   
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig5' si f5 est True : Plan de phase (3D)
 if f5 == True :
     
-    
    fig5 = plt.figure()
-   ax = plt.axes(projection='3d')
-
-# Pour 'v' et 'col' compris dans 'values'
-   for v, col in zip(values, mcolors): 
-      X0 = array([ v*c/d , v*a/b , v]) # Conditions initales (proportionnel à v)
-      X = integrate.odeint( dXs_dt, X0, t1) # Intégration via odeint 
-      ax.plot3D( X[:,0], X[:,1], X[:,2], lw=4*v, color=col, label='X0=(%.f, %.f)' % (X0[0],X0[1]) )
-      ax.scatter(X0[0], X0[1], X0[2], s=70, marker='o',color=col) # Plot des conditions initiales
-    
-# lw = épaisseur des courbes (proportionnel à v)
-# color = couleur des courbes (proportionnel à col, et donc à v)
-
-   ax.set_xlabel('Proie (unité arbitraire)',fontsize=16)
-   ax.set_ylabel('Prédateurs (unité arbitraire)',fontsize=16)
-   ax.set_zlabel('3ème acteur (unité arbitraire)',fontsize=16)
-
-# Première méthode pour ajuster fenêtre d'affichage
+   ax5 = plt.axes(projection='3d')
+   
+   # Pour 'v' et 'col' compris dans 'values'
+   for v, col in zip(valuess, mcolors): 
+      X0 = array([v,v,v]) # Conditions initales (proportionnel à v)
+      X = integrate.odeint( dXs_dt, X0, t2) # Intégration via odeint 
+      ax5.plot3D( X[:,0], X[:,1], X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
+      ax5.scatter(X0[0], X0[1], X0[2], s=70, marker='o',color=col) # Plot des conditions initiales
+      
+   # lw = épaisseur des courbes (proportionnel à v)
+   # color = couleur des courbes (proportionnel à col, et donc à v)
+   ax5.set_xlabel('Proies',fontsize=16)
+   ax5.set_ylabel('Prédateurs',fontsize=16)
+   ax5.set_zlabel('3ème acteur',fontsize=16)
+   
+   # Première méthode pour ajuster fenêtre d'affichage
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,750,750)
-#(Distance de gauche, distance d'en haut, largeur, hauteur)
-
-# Deuxième méthode pour ajuster fenêtre
-#fig1.set_size_inches(10, 10)
-
+   
+   #(Distance de gauche, distance d'en haut, largeur, hauteur)
+   # Deuxième méthode pour ajuster fenêtre
+   #fig1.set_size_inches(10, 10)
    plt.legend()
 #-----------------------------------------------------------------------------#
 
