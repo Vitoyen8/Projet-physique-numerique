@@ -54,3 +54,26 @@ barre_y0= Slider(axe_y0, label='$y_0$',valmin=0.1,
 def update(val):
     
     ax3b[0].clear()
+    ax3b[1].clear()
+    ax3b[0].legend()
+    ax3b[1].legend()
+    ax3b[0].set_xlabel('Temps')
+    ax3b[0].set_ylabel('Prédateurs')
+    ax3b[1].set_xlabel('Temps')
+    ax3b[1].set_ylabel('Proies');
+    
+    X00[0]=barre_x0.val
+    X00[1]=barre_y0.val
+    trace(X00,a,b,c,d)
+    
+barre_x0.on_changed(update)
+barre_y0.on_changed(update)
+
+update(0)
+
+#-----------------------------------------------------------------------------#
+
+mngr = plt.get_current_fig_manager()
+mngr.window.setGeometry(0,70,1438,750)
+
+plt.show()
