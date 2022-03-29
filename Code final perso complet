@@ -321,21 +321,21 @@ if f4 == True :
    for v, col in zip(valuess, vcolors): 
       X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,0], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]))
+      plt.plot(t, X[:,0], lw=1, color=col, label='$X_0$=(%.f,%.f,%.f)' % (X0[0],X0[1],X0[2]))
       plt.scatter(0, X0[0], s=40, marker='o',color=col) # Plot des conditions initiales
  #     legend1 = fig4.legend('$X_0$=(%.f,%.f)' % (X0[0],X0[1]), title="Classes")
       
    for v, col in zip(valuess, mcolors): 
       X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,1], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,1], lw=1, color=col, label='$X_0$=(%.f,%.f,%.f)' % (X0[0],X0[1],X0[2]) )
       plt.scatter(0, X0[1], s=40, marker='o',color=col) # Plot des conditions initiales
  #     legend2 = fig4.legend('$X_0$=(%.f,%.f)' % (X0[0],X0[1]), title="Classes")
       
    for v, col in zip(valuess, hcolors): 
       X0 = array([v,v,v])
       X = integrate.odeint( dXs_dt, X0, t)
-      plt.plot(t, X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
+      plt.plot(t, X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f,%.f)' % (X0[0],X0[1],X0[2]) )
       plt.scatter(0, X0[2], s=40, marker='o',color=col) # Plot des conditions initiales
       legend3 = fig4.legend('H+r"{0:.2f}".format(valuess)', title="Classes") 
    
@@ -357,7 +357,7 @@ if f5 == True :
    for v, col in zip(valuess, mcolors): 
       X0 = array([v,v,v]) # Conditions initales (proportionnel à v)
       X = integrate.odeint( dXs_dt, X0, t2) # Intégration via odeint 
-      ax5.plot3D( X[:,0], X[:,1], X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
+      ax5.plot3D( X[:,0], X[:,1], X[:,2], lw=1, color=col, label='$X_0$=(%.f,%.f,%.f)' % (X0[0],X0[1],X0[2]) )
       ax5.scatter(X0[0], X0[1], X0[2], s=70, marker='o',color=col) # Plot des conditions initiales
       
    # lw = épaisseur des courbes (proportionnel à v)
