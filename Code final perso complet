@@ -40,7 +40,7 @@ if f1 == True or f2 == True or f3 == True or f3a == True or f3b == True or f3c =
   
 #-----------------------------------------------------------------------------#
 
-# Graph de variation des params #
+# Graph de variation des paramètres #
   X00 = [4, 2] # Condittions initiales
   t3a = linspace(0, 20, 500) # Temps pour alpha
   t3b = linspace(0, 20, 500) # Temps pour beta
@@ -56,7 +56,7 @@ if f1 == True or f2 == True or f3 == True or f3a == True or f3b == True or f3c =
 #-----------------------------------------------------------------------------#
 # Pour le graph de variations de dx/dt en fonction des conditions initales 
 
-# Créer une suite 'values' compris entre 1er et 2ème point fixe.
+# Créer une suite 'values' compris entre 1er et 2ème point fixe. !!!!!!!!!!!!!
   values  = linspace(0.3, 0.9, 10)
 
 #-----------------------------------------------------------------------------#
@@ -185,20 +185,20 @@ if f3a == True :
    fig3a, ax3a = plt.subplots(2,1)
    fig3a.suptitle("Proies et prédateurs en fonction de alpha", size = 17 )
    
-   for a, col in zip(alphas, vcolors):
+   for A, col in zip(alphas, vcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3a, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3a, args = (A,b,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
-       ax3a[0].plot(t3a, X[:,0], color = col, label= R" $\alpha = $" + "%.1f" %a)
+       ax3a[0].plot(t3a, X[:,0], color = col, label= R" $\alpha = $" + "%.1f" %A)
        ax3a[0].legend()
        
-   for a, col in zip(alphas, mcolors):
+   for A, col in zip(alphas, mcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3a, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3a, args = (A,b,c,d))
        
-       ax3a[1].plot(t3a, X[:,1], color = col, label = R" $\alpha = $" + "%.1f" %a)
+       ax3a[1].plot(t3a, X[:,1], color = col, label = R" $\alpha = $" + "%.1f" %A)
        ax3a[1].legend()
    ax3a[0].set_xlabel('Temps')
    ax3a[0].set_ylabel('Prédateurs')
@@ -214,20 +214,20 @@ if f3b == True :
    fig3b, ax3b = plt.subplots(2,1)
    fig3b.suptitle("Proies et prédateurs en fonction de beta", size = 17 )
    
-   for b, col in zip(betas, vcolors):
+   for B, col in zip(betas, vcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3b, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3b, args = (a,B,c,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
-       ax3b[0].plot(t3b, X[:,0], color = col, label= R" $\beta = $" + "%.1f" %b)
+       ax3b[0].plot(t3b, X[:,0], color = col, label= R" $\beta = $" + "%.1f" %B)
        ax3b[0].legend()
+        
+   for B, col in zip(betas, mcolors):
+        
+       X = integrate.odeint(dX_dt, X00, t3b, args = (a,B,c,d))
        
-   for b, col in zip(betas, mcolors):
-       
-       X = integrate.odeint(dX_dt, X00, t3b, args = (a,b,c,d))
-       
-       ax3b[1].plot(t3b, X[:,1], color = col, label = R" $\beta = $" + "%.1f" %b)
+       ax3b[1].plot(t3b, X[:,1], color = col, label = R" $\beta = $" + "%.1f" %B)
        ax3b[1].legend()
        fig3b.suptitle("Proies et prédateurs en fonction de beta")
        
@@ -235,6 +235,7 @@ if f3b == True :
    ax3b[0].set_ylabel('Prédateurs')
    ax3b[1].set_xlabel('Temps')
    ax3b[1].set_ylabel('Proies');
+   
    mngr = plt.get_current_fig_manager()
    mngr.window.setGeometry(0,70,1438,750)
 #-----------------------------------------------------------------------------#
@@ -244,20 +245,20 @@ if f3c == True :
    fig3c, ax3c = plt.subplots(2,1)
    fig3c.suptitle("Proies et prédateurs en fonction de gamma", size = 17 )
    
-   for c, col in zip(gammas, vcolors):
+   for C, col in zip(gammas, vcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,C,d))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
-       ax3c[0].plot(t3c, X[:,0], color = col, label= R" $\gamma = $" + "%.1f" %c)
+       ax3c[0].plot(t3c, X[:,0], color = col, label= R" $\gamma = $" + "%.1f" %C)
        ax3c[0].legend()
        
-   for c, col in zip(gammas, mcolors):
+   for C, col in zip(gammas, mcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3c, args = (a,b,C,d))
        
-       ax3c[1].plot(t3c, X[:,1], color = col, label = R" $\gamma = $" + "%.1f" %c)
+       ax3c[1].plot(t3c, X[:,1], color = col, label = R" $\gamma = $" + "%.1f" %C)
        ax3c[1].legend()
        fig3c.suptitle("Proies et prédateurs en fonction de gamma")
        
@@ -271,23 +272,25 @@ if f3c == True :
 # Défini figure 'fig3d' si f3d = True : dX_dt en fonction de d
 if f3d == True :
    
+   
+   
    fig3d, ax3d = plt.subplots(2,1)
    fig3d.suptitle("Proies et prédateurs en fonction de delta", size = 17  )
    
-   for d, col in zip(deltas, vcolors):
+   for D, col in zip(deltas, vcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,D))
        
        # ici, R signifie raw string, permet de créer une chaine brute
        # "%.1f" %b -> Remplace % par la valeur de b avec (.1f) 1 décimale
-       ax3d[0].plot(t3d, X[:,0], color = col, label= R" $\delta = $" + "%.1f" %d)
+       ax3d[0].plot(t3d, X[:,0], color = col, label= R" $\delta = $" + "%.1f" %D)
        ax3d[0].legend()
        
-   for d, col in zip(deltas, mcolors):
+   for D, col in zip(deltas, mcolors):
        
-       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,d))
+       X = integrate.odeint(dX_dt, X00, t3d, args = (a,b,c,D))
        
-       ax3d[1].plot(t3d, X[:,1], color = col, label = R" $\delta= $" + "%.1f" %d)
+       ax3d[1].plot(t3d, X[:,1], color = col, label = R" $\delta= $" + "%.1f" %D)
        ax3d[1].legend()
        fig3d.suptitle("Proies et prédateurs en fonction de delta")
        
@@ -303,10 +306,12 @@ if f3d == True :
 
 #-----------------------------------------------------------------------------#
 def dXs_dt(X, t=0):
+
     e, f = 0.5, 0.8
     return array([ a*X[0] - b*X[0]*X[1]*X[2], 
                   -c*X[1]*X[2] + d*b*X[0]*X[1], 
                   -e*X[0]*X[2] + d*b*X[0]*X[1]])
+
 #-----------------------------------------------------------------------------#
 # Défini figure 'fig4' si f4 est True: Population en fonction du temps pour dXs/dt
 if f4 == True :
