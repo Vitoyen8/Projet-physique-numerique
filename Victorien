@@ -52,6 +52,8 @@ barre_y0= Slider(axe_y0, label='$y_0$',valmin=0.1,
                      valmax=30,orientation="vertical")
  
 def update(val):
+    ax3b[1].clear()
+    ax3b[0].clear()
     X00[0]=barre_x0.val
     X00[1]=barre_y0.val
     trace(X00,a,b,c,d)
