@@ -1,0 +1,140 @@
+# -*- coding: utf-8 -*-
+import  numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
+from mpl_toolkits import mplot3d
+
+plt.ion()
+# Entrer '%matplotlib qt' dans la console si la fenêtre ne s'ouvre pas
+ 
+a,b,c0 = 0.2, 0.2, 4.8 # Paramètres initiaux
+c=c0
+y_in = np.array([0, 1, 0.5])   # Conditions initiales
+tmax= 10000           # Intervalle de temps
+N = 100000
+d=1e-3          # Nombre de points en temps
+t = np.linspace(0, tmax, N) # Tableau des temps avec N valeurs
+t1 = np.linspace(0, 1e-3, N)
+# La fonction qui définit le système dynamique
+def V(y, t, a, b, c):
+  """Les équations de Rössler"""
+  return [-y[1] - y[2],
+          y[0] + a*y[1],
+          b + (y[0] -c)*y[2]]
+
+def L(y, t, a, b, c):
+  """Les équations de Lorenz"""
+  return [a*(y[1]-y[0]), 
+          b*y[0]-y[1]-y[0]*y[2], 
+          y[0]*y[1]-c*y[2]]
+ 
+# Définition de la figure
+fig=plt.figure()
+#ax=fig.gca(projection='3d')
+
+def converge(y0,t,a,b,c) :
+  y=odeint(V, y0, t, args=(a,b,c))
+  return np.array([y.T[0,-1], y.T[1,-1], y.T[2,-1] ])
+
+# Les points fixes
+def fixed_point(a,b,c) :
+  D = c**2-4*a*b
+  xp0 = (c - np.sqrt(D))/2
+  xp1 = -xp0/a
+  xp2 = xp0/a
+  
+  # Tracé des points fixes en rouge
+  ax.plot3D([xp0], [xp1], [xp2],  marker='o', linestyle='none', color='red')
+
+def Lyapunov(y0,u,d, a,b,c):
+    y1 = odeint(V, y0, t1, args=(a,b,c))
+    y2 = odeint(V, y0+d*u, t1, args=(a,b,c))
+    delta = np.zeros(shape=(N))
+    for i in range(N):
+      delta[i] = ((y2[i,0]-y1[i,0])**2+(y2[i,1]-y1[i,1])**2+(y2[i,2]-y1[i,2])**2)**(1/2)
+    return delta
+
+
+#u=np.array([0, 0, 1])
+yini=converge(y_in,t,a,b,c)
+#delta=Lyapunov(yini,u,1e-3,a,b,c)
+#plt.semilogy(t1,delta,'gold')
+#plt.xlabel('Temps en seconde')
+#plt.ylabel('Distance euclidienne en échelle log')
+#plt.title('Distance en fonction du temps')
+#y_params = np.polyfit(t1, delta, 1)
+#y = np.poly1d(y_params)
+#plt.semilogy(t1,y(t1),'gold',label='y={}'.format(y))
+#plt.legend()
+
+def Poincaré(y0, a,b,c):
+    X=[]
+    F=[]
+    y1 = odeint(V, y0, t, args=(a,b,c))
+    for i in range (N-1):
+        if y1[i+1,1]>0 and y1[i,1] < 0:
+            X.append(y1[i,0])
+    l=len(X)
+    for i in range(l):
+        X[i]=X[i]/np.max(X)
+ 
+    for i in range (l-1):
+        F.append(X[i+1])
+        
+    for i in range (len(F)):
+        F[i]=F[i]/np.max(F)
+        
+    return X,F
+
+     
+X=Poincaré (yini, a,b,c)[0]
+X.pop()  
+F=Poincaré (yini, a,b,c)[1]
+
+plt.plot(X,F,'.',color='crimson')
+plt.title('Section de Poincaré')
+plt.xlabel('xk')
+plt.ylabel('f(xk)')
+#Défnition du tracé avec paramètres a,b,c
+#def trace(y0, a,b,c) :
+#  y = odeint(V, y0, t, args=(a,b,c))
+#  y0 = np.array([y.T[0,-1], y.T[1,-1], y.T[2,-1] ])
+#  y = odeint(V, y0, t, args=(a,b,c))
+#  X,Y,Z = y.T[0], y.T[1], y.T[2]# liste de points
+#  ax.clear()
+#  ax.plot3D(X,Y,Z, 'blue')
+#  fixed_point(a,b,c)
+#
+#def quitter(event):
+#  plt.close()
+
+## Barre de glissement pour le paramètre c
+#axe_c = plt.axes([0.1, 0.075, 0.65, 0.02])
+#barre_c= Slider(axe_c, 'c', 1.0, 15, 2.5)
+##fin = plt.axes([0.85, 0.05, 0.1, 0.04])
+##bouton_fin=Button(fin,'Fin')
+#
+#axe_a=plt.axes([0.1, 0.025, 0.65, 0.02])
+#barre_a=Slider(axe_a, 'a', 0, 1,a)
+#
+#axe_b=plt.axes([0.1, 0.05, 0.65, 0.02])
+#barre_b=Slider(axe_b, 'b', 0, 2,b)
+#fin = plt.axes([0.85, 0.05, 0.1, 0.04])
+#bouton_fin=Button(fin,'Fin')
+## Mise à jour de l'image
+#def update(val):
+#  c=barre_c.val
+#  a=barre_a.val
+#  b=barre_b.val
+#  trace(y_in,a,b,c)
+
+## Activation de la barre
+#barre_c.on_changed(update)
+#barre_a.on_changed(update)
+#barre_b.on_changed(update)
+#bouton_fin.on_clicked(quitter)
+
+# Initialisation
+#update(0)
+#plt.show()
