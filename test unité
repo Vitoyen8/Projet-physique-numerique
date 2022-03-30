@@ -1,0 +1,21 @@
+from numpy import *
+import numpy as np
+from scipy import integrate
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(3,1)
+t = linspace(0, 15, 1000)
+a, b, c, d = 1.0, 0.1, 1.5, 0.75
+
+def dX_dt(X, t, a, b, c, d):
+    return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*b*X[0]*X[1] ])
+
+X0 = array([4,2])
+X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
+ax[0].plot(X[:,0], X[:,1], label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]))
+ax[1].plot(t, X[:,1], label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]))
+ax[2].plot(t, X[:,0], label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]))
+plt.legend()
+
+mngr = plt.get_current_fig_manager()
+mngr.window.setGeometry(0,70,1438,750)
