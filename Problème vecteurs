@@ -5,23 +5,17 @@ from scipy import integrate
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
-a, b, c, d = 1.0, 0.1, 1.5, 0.75
 values  = linspace(0.3, 0.9, 10)
 t = linspace(0, 15, 1000)
 vcolors = p.cm.winter_r(linspace(0.1, 1.0, len(values)))
 
-def dX_dt(X, t, a, b, c, d):
-      return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*b*X[0]*X[1] ])
-
-for v, col in zip(values, vcolors): 
-
-    X0 = array([ v*c/(d*b) , v*(a/b) ])
-    X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
-
 def trace2(A,B,C,D) :
+    
+    def dX_dt(X, t, A, B, C, D):
+          return array([ A*X[0] - B*X[0]*X[1] , -C*X[1] + D*B*X[0]*X[1] ])
 
     for v, col in zip(values, vcolors): 
-        X0 = array([ v*C/(D*B) , v*(A/B) ])
+        X0 = array([ v*C/(D*B) , v*A/B ])
         X = integrate.odeint( dX_dt, X0, t, args=(A,B,C,D))
         plt.plot(X[:,0], X[:,1],lw=5*v, color=col, label='$X_0$=(%.f,%.f)' % (X0[0],X0[1]) )
         plt.scatter(X0[0], X0[1], s=70, marker='o',color=col) # Plot des conditions initiales
@@ -37,20 +31,15 @@ def trace2(A,B,C,D) :
     y = linspace(0, ymax, nb_points) # Liste de points entre 0 et ymax
    
     X1 , Y1  = meshgrid(x, y)  # Création d'une grille
-    DX1, DY1 = dX_dt([X1, Y1],t,a,b,c,d) # On associe à chaque valeur la rapidité de convergence
+    DX1, DY1 = dX_dt([X1, Y1],t,A,B,C,D) # On associe à chaque valeur la rapidité de convergence
     M = (hypot(DX1, DY1))      # Norme de la rapidité de convergence
     M [M == 0] = 1.0           # On retirer l'erreur de la division par 0
     DX1 = DX1/M                # Normalisation des vecteurs
     DY1 = DY1/M   
    
     # On utilise la fonction p.quiver pour tracer les vecteurs
-    vecteur = p.quiver(X1, Y1, DX1, DY1, M, pivot='tip', cmap=p.cm.rainbow)
-    # Plot d'une courbe vertical x = à 1/unité arbitraire
-    #plt.plot([xmax,0], [0.001,0.001], '--k', lw=1.5)
-   
-    # Plot d'une courbe vertical y = à 1/unité arbitraire
-    #plt.plot([0.001,0.001], [0,ymax], '--k', lw=1.5)
-   
+    vecteur = p.quiver(X1, Y1, DX1, DY1, M, pivot='tail', cmap=p.cm.rainbow)
+
    #--------------------------------------------------------------------------#
    # Barre de glissement du point fixe centrale
                  
@@ -61,14 +50,10 @@ axe_d = plt.axes([0.12, 0.1, 0.015, 0.8])
 
 fig2 = plt.axes([0.2, 0.1, 0.7, 0.8])
 
-barre_a = Slider(axe_a, label='a', valmin=0, valmax=10, valinit=4, 
-                      orientation='vertical')
-barre_b = Slider(axe_b, label='b',valmin=0, valmax=10, valinit=2, 
-                      orientation='vertical' )
-barre_c = Slider(axe_c, label='c', valmin=0, valmax=10, valinit=4, 
-                      orientation='vertical')
-barre_d = Slider(axe_d, label='d',valmin=0, valmax=10, valinit=2, 
-                      orientation='vertical' )
+barre_a = Slider(axe_a, label='a', valmin=0, valmax=2, valinit=1, orientation='vertical')
+barre_b = Slider(axe_b, label='b',valmin=0, valmax=2, valinit=1, orientation='vertical' )
+barre_c = Slider(axe_c, label='c', valmin=0, valmax=2, valinit=1, orientation='vertical')
+barre_d = Slider(axe_d, label='d',valmin=0, valmax=2, valinit=1, orientation='vertical' )
    
 def update(val):
     
