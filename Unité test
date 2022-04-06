@@ -1,0 +1,59 @@
+from numpy import *
+import numpy as np
+from scipy import integrate
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(3,1)
+t = linspace(0, 15, 1000)
+a, b, c, d = 1.0, 0.1, 1.5, 0.75
+X0 = array([4,2])
+unité = 0.1
+i_unité = 1/unité
+
+def dX_dt(X, t, a, b, c, d): 
+    return array([ a*X[0] - b*X[0]*X[1] , -c*X[1] + d*b*X[0]*X[1] ])
+
+X = integrate.odeint( dX_dt, X0, t, args=(a,b,c,d))
+
+# XL[0] = np.zeros(t)
+# def dX_dt0(XL, t, c): 
+#     return array([ XL[0] , -c*XL[1] ])
+https://github.com/Benwouah/Projet-physique-numerique
+# XR[1] = np.zeros(t)
+# def dX_dt1(XR, t, a, b, c, d): 
+#     return array([ a*XR[0] , -c*XR[1] ])
+
+
+# Tentative d'insertion d'une valeur limite
+# Trouve toutes la position de toutes valeurs pour lesquelles x et y sont inférieur à 1
+valeurX = np.where(X[:,0]<30)
+valeurY = np.where(X[:,1]<100)
+
+print(X[:,0])
+print(valeurY)
+# Trouve la position minimum de chacune des positions
+minimumX = min(valeurX[0])
+minimumY = min(valeurY[0])
+
+if minimumX > minimumY :
+    print('Les lapins atteignent 0 avant les renards')
+    X0L = ([0,2])
+    XL = integrate.odeint( dX_dt, X0L, t, args=(a,b,c,d))
+    ax[0].plot(XL[:,0], XL[:,1])
+    ax[1].plot(t, XL[:,1])
+    ax[2].plot(t, XL[:,0])
+else :
+    print('Les renards atteignent 0 avant les lapins')
+    X[minimumX,1] = 0
+    X0R = ([4,0])
+    XR = integrate.odeint( dX_dt, X0R, t, args=(a,b,c,d))
+    ax[0].plot(XR[:,0], XR[:,1])
+    ax[1].plot(t, XR[:,1])
+    ax[2].plot(t, XR[:,0])
+
+# print(X[:,0])
+# print(X[:,1])
+
+print("Temps pour laquelle on a minimum de X :", minimumX)
+print("Temps pour laquelle on a minimum de Y :", minimumY)
+
